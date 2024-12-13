@@ -15,7 +15,11 @@ BLACK = (0, 0, 0)
 
 # Загрузка изображения игрока
 player_image = pygame.image.load('Pikachu Pixel Art.jpg')  # Замените на путь к вашему изображению
-player_image = pygame.transform.scale(player_image, (30, 30))  # Изменение размера изображения, если необходимо
+player_image = pygame.transform.scale(player_image, (30, 30))  # Изменение размера изображения игрока
+
+# Загрузка изображения пули
+bullet_image = pygame.image.load('Pikachu Pixel Art.jpg')  # Замените на путь к вашему изображению пули
+bullet_image = pygame.transform.scale(bullet_image, (10, 10))  # Изменение размера изображения пули
 
 # Позиция игрока
 player_pos = [750, 450]
@@ -79,7 +83,8 @@ while True:
 
     # Отображение пуль
     for bullet in bullets:
-        pygame.draw.circle(screen, (255, 255, 255), (int(bullet[0]), int(bullet[1])), 5)
+        # Отображаем изображение пули
+        screen.blit(bullet_image, (bullet[0], bullet[1]))
 
     # Обновление экрана
     pygame.display.flip()
