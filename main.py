@@ -55,11 +55,12 @@ def check_collisions(player_x, player_y, enemies):
         if player_x < enemy_x + 30 and player_x + 30 > enemy_x and player_y < enemy_y + 30 and player_y + 30 > enemy_y:
             player_health -= enemy_damage  # Уменьшаем здоровье игрока при столкновении
             print(f"Урон от врага! Текущее здоровье: {player_health}")
-
-# Основной игровой цикл
 running = True
-kills = 0
 score = 0
+
+kills = 0  # Счетчик убийств
+level = 1  # Текущий уровень
+kills_to_next_level = 10  # Количество убийств для повышения уровня
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -143,7 +144,12 @@ while running:
                 if enemy[2] <= 0:  # Если HP врага ниже или равно 0
                     enemies.remove(enemy)  # Удаляем врага
 
-    # Заливка фона цветом
+    if kills >= kills_to_next_level:
+       level += 1  # Увеличиваем уровень
+       kills_to_next_level += 10  # Увеличиваем количество убийств для следующего уровня
+       print(f"Поздравляем! Вы достигли уровня {level}!")
+   
+    # Заливка фона цветомы
     screen.fill(BLACK)
 
     # Отображение изображения игрока
@@ -161,6 +167,9 @@ while running:
     kills_text = font.render(f"Убийства: {kills}", True, (255, 255, 255))
     screen.blit(kills_text, (10, 10))
 
+    level_text = font.render(f"Уровень: {level}", True, (255, 255, 255))  # Создание текста с текущим уровнем
+    screen.blit(level_text, (10, 50))  # Отображение текста ниже счетчика убийств
+
     check_collisions(player_pos[0], player_pos[1], enemies)
 
     if player_health <= 0:
@@ -169,5 +178,3 @@ while running:
        score = kills
     # Обновление экранаwww
     pygame.display.flip()
-
-   
