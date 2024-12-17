@@ -39,7 +39,7 @@ bullet_speed = 10
 
 # Враги
 enemies = []
-enemy_speed = 2
+enemy_speed = 0.5
 enemy_spawn_timer = 0
 enemy_hp = 3  # Здоровье врагов
 enemy_damage = 10    # Урон, который наносит враг
@@ -117,14 +117,25 @@ while running:
 
     # Обновление позиции врагов
     for enemy in enemies:
-        direction_x = random.choice([-1, 1])
-        direction_y = random.choice([-1, 1])
-        enemy[0] += direction_x * enemy_speed
-        enemy[1] += direction_y * enemy_speed
+    # Вычисляем направление к игроку
+        direction_x = player_pos[0] - enemy[0]
+        direction_y = player_pos[1] - enemy[1]
 
-        # Ограничения движений врага
+        length = math.sqrt(direction_x ** 2 + direction_y ** 2)
+
+        if length > 0:
+            # Нормализуем направление
+            direction_x /= length
+            direction_y /= length
+
+            # Передвигаем врага в сторону игрока
+            enemy[0] += direction_x * enemy_speed
+            enemy[1] += direction_y * enemy_speed
+
+        # Ограничиваем передвижение врага в пределах экрана
         enemy[0] = max(0, min(enemy[0], width - 30))
         enemy[1] = max(0, min(enemy[1], height - 30))
+
 
     for bullet in bullets:
         for enemy in enemies:
