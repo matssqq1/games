@@ -1,6 +1,9 @@
 import pygame
 import sys
 import math
+import random
+
+
 
 # Инициализация Pygame
 pygame.init()
@@ -21,20 +24,47 @@ player_image = pygame.transform.scale(player_image, (30, 30))  # Изменен�
 bullet_image = pygame.image.load('Pikachu Pixel Art.jpg')  # Замените на путь к вашему изображению пули
 bullet_image = pygame.transform.scale(bullet_image, (10, 10))  # Изменение размера изображения пули
 
+# Загрузка изображения врага
+enemy_image = pygame.image.load('enemy.png')  # Замените на путь к изображению врага
+enemy_image = pygame.transform.scale(enemy_image, (30, 30))  # Изменение размера изображения врага
+
 # Позиция игрока
 player_pos = [750, 450]
+player_health = 100  # Здоровье игрока
+   
 
 # Пули
 bullets = []
 bullet_speed = 10
 
+# Враги
+enemies = []
+enemy_speed = 2
+enemy_spawn_timer = 0
+enemy_hp = 3  # Здоровье врагов
+enemy_damage = 10    # Урон, который наносит враг
+
+player_x = player_pos[0]
+player_y = player_pos[1]
+
+def check_collisions(player_x, player_y, enemies):
+    global player_health  # Обратите внимание, что мы можем изменять глобальную переменную
+    for enemy in enemies:
+        enemy_x = enemy[0] # Координаты врага
+        enemy_y = enemy[1]  
+        if player_x < enemy_x + 30 and player_x + 30 > enemy_x and player_y < enemy_y + 30 and player_y + 30 > enemy_y:
+            player_health -= enemy_damage  # Уменьшаем здоровье игрока при столкновении
+            print(f"Урон от врага! Текущее здоровье: {player_health}")
+
 # Основной игровой цикл
-while True:
+running = True
+kills = 0
+score = 0
+while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-
         # Проверка нажатия кнопки мыши
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Левая кнопка мыши
@@ -56,13 +86,13 @@ while True:
 
     # Движения игрока (WASD управление)
     if keys[pygame.K_a]:
-        player_pos[0] -= 5
+        player_pos[0] -= 1
     if keys[pygame.K_d]:
-        player_pos[0] += 5
+        player_pos[0] += 1
     if keys[pygame.K_w]:
-        player_pos[1] -= 5
+        player_pos[1] -= 1
     if keys[pygame.K_s]:
-        player_pos[1] += 5
+        player_pos[1] += 1
 
     # Ограничения игрока в пределах экрана
     player_pos[0] = max(0, min(player_pos[0], width - 30))
@@ -75,6 +105,44 @@ while True:
 
     bullets = [bullet for bullet in bullets if bullet[1] > 0 and bullet[0] > 0 and bullet[0] < width]
 
+    # Создание врагов
+    enemy_spawn_timer += 1  
+    if enemy_spawn_timer > 400:  # Интервал спавна врагов
+        enemy_spawn_timer = 0
+        enemy_x = random.randint(0, width - 30)
+        enemy_y = random.randint(0, height - 30)
+
+        enemies.append([enemy_x, enemy_y, enemy_hp])  # Добавляем HP врагу
+
+    # Обновление позиции врагов
+    for enemy in enemies:
+        direction_x = random.choice([-1, 1])
+        direction_y = random.choice([-1, 1])
+        enemy[0] += direction_x * enemy_speed
+        enemy[1] += direction_y * enemy_speed
+
+        # Ограничения движений врага
+        enemy[0] = max(0, min(enemy[0], width - 30))
+        enemy[1] = max(0, min(enemy[1], height - 30))
+
+    for bullet in bullets:
+        for enemy in enemies:
+            if enemy[0] < bullet[0] < enemy[0] + 30 and enemy[1] < bullet[1] < enemy[1] + 30:
+                enemy[2] -= 10  
+                bullets.remove(bullet)
+                if enemy[2] <= 0:  
+                    enemies.remove(enemy)
+                    kills += 1  # Увеличиваем счетчик убийств
+    
+    # Проверка на столкновения пуль и врагов
+    for bullet in bullets:
+        for enemy in enemies:
+            if enemy[0] < bullet[0] < enemy[0] + 30 and enemy[1] < bullet[1] < enemy[1] + 30:  # Проверка на пересечение
+                enemy[2] -= 10  # Уменьшаем HP врага
+                bullets.remove(bullet)  # Удаляем пулю
+                if enemy[2] <= 0:  # Если HP врага ниже или равно 0
+                    enemies.remove(enemy)  # Удаляем врага
+
     # Заливка фона цветом
     screen.fill(BLACK)
 
@@ -83,8 +151,23 @@ while True:
 
     # Отображение пуль
     for bullet in bullets:
-        # Отображаем изображение пули
         screen.blit(bullet_image, (bullet[0], bullet[1]))
 
-    # Обновление экрана
+    # Отображение врагов
+    for enemy in enemies:
+        screen.blit(enemy_image, (enemy[0], enemy[1]))
+
+    font = pygame.font.Font(None, 36)
+    kills_text = font.render(f"Убийства: {kills}", True, (255, 255, 255))
+    screen.blit(kills_text, (10, 10))
+
+    check_collisions(player_pos[0], player_pos[1], enemies)
+
+    if player_health <= 0:
+       print("Игра окончена!")
+       running = False
+       score = kills
+    # Обновление экранаwww
     pygame.display.flip()
+
+   
