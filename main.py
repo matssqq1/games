@@ -3,8 +3,6 @@ import sys
 import math
 import random
 
-
-
 # Инициализация Pygame
 pygame.init()
 
@@ -32,7 +30,6 @@ enemy_image = pygame.transform.scale(enemy_image, (30, 30))  # Изменени�
 player_pos = [750, 450]
 player_health = 100  # Здоровье игрока
    
-
 # Пули
 bullets = []
 bullet_speed = 10
@@ -61,6 +58,27 @@ score = 0
 kills = 0  # Счетчик убийств
 level = 1  # Текущий уровень
 kills_to_next_level = 10  # Количество убийств для повышения уровня
+enemy_hp_base = 3  # Базовое здоровье врагов
+enemy_damage_base = 10  # Базовый урон врагов
+
+def spawn_enemy(level):
+    edge = random.choice(['top', 'bottom', 'left', 'right'])  # Выбор стороны экрана для спауна
+    if edge == 'top':
+        enemy_x = random.randint(0, width - 30)
+        enemy_y = 0  # Враг появляется сверху
+    elif edge == 'bottom':
+        enemy_x = random.randint(0, width - 30)
+        enemy_y = height - 30  # Враг появляется снизу
+    elif edge == 'left':
+        enemy_x = 0  # Враг появляется слева
+        enemy_y = random.randint(0, height - 30)
+    else:  # edge == 'right'
+        enemy_x = width - 30  # Враг появляется справа
+        enemy_y = random.randint(0, height - 30)
+
+    enemy_hp = enemy_hp_base + (level - 1)  # Увеличение здоровья врагов с каждым уровнем
+    return [enemy_x, enemy_y, enemy_hp]
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -107,14 +125,11 @@ while running:
     bullets = [bullet for bullet in bullets if bullet[1] > 0 and bullet[0] > 0 and bullet[0] < width]
 
     # Создание врагов
-    enemy_spawn_timer += 1  
-    if enemy_spawn_timer > 400:  # Интервал спавна врагов
+    enemy_spawn_timer += 1
+    if enemy_spawn_timer > 300:  # Интервал спавна врагов
         enemy_spawn_timer = 0
-        enemy_x = random.randint(0, width - 30)
-        enemy_y = random.randint(0, height - 30)
-
-        enemies.append([enemy_x, enemy_y, enemy_hp])  # Добавляем HP врагу
-
+        enemies.append(spawn_enemy(level))  # Теперь не передаем координаты игрока
+        
     # Обновление позиции врагов
     for enemy in enemies:
     # Вычисляем направление к игроку
@@ -137,14 +152,21 @@ while running:
         enemy[1] = max(0, min(enemy[1], height - 30))
 
 
+    # Обработка столкновений и логика врагов
     for bullet in bullets:
         for enemy in enemies:
             if enemy[0] < bullet[0] < enemy[0] + 30 and enemy[1] < bullet[1] < enemy[1] + 30:
-                enemy[2] -= 10  
+                enemy[2] -= 3  # Уменьшаем здоровье врага
                 bullets.remove(bullet)
-                if enemy[2] <= 0:  
+                if enemy[2] <= 0:
                     enemies.remove(enemy)
-                    kills += 1  # Увеличиваем счетчик убийств
+                    kills += 1
+                    # Проверка на повышение уровня
+                    if kills >= kills_to_next_level:
+                        level += 1
+                        kills = 0  # Сбрасываем счетчик убийств
+                        
+                        print(f"Уровень поднят! Текущий уровень: {level}")
     
     # Проверка на столкновения пуль и врагов
     for bullet in bullets:
@@ -187,5 +209,5 @@ while running:
        print("Игра окончена!")
        running = False
        score = kills
-    # Обновление экранаwww
+    # Обновление экрана
     pygame.display.flip()
