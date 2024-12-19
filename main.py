@@ -2,8 +2,6 @@ import pygame
 import sys
 import math
 import random
-import imageio
-
 
 # Инициализация Pygame
 pygame.init()
@@ -16,15 +14,9 @@ pygame.display.set_caption('game payton')
 # Цвета
 BLACK = (0, 0, 0)
 
-# # Загрузка изображения игрока
-# player_image = pygame.image.load('Pikachu Pixel Art.jpg')  # Замените на путь к вашему изображению
-# player_image = pygame.transform.scale(player_image, (30, 30))  # Изменение размера изображения игрока
-
-# гифт
-gif = imageio.get_reader("tanks.gif")  # Замените на путь к вашему GIF
-frames = [frame for frame in gif]  # Получаем все кадры GIF
-frame_count = len(frames)  # Общее количество кадров
-current_frame_index = 0  # Индекс текущего кадра
+# Загрузка изображения игрока
+player_image = pygame.image.load('Pikachu Pixel Art.jpg')  # Замените на путь к вашему изображению
+player_image = pygame.transform.scale(player_image, (30, 30))  # Изменение размера изображения игрока
 
 # Загрузка изображения пули
 bullet_image = pygame.image.load('Pikachu Pixel Art.jpg')  # Замените на путь к вашему изображению пули
@@ -192,6 +184,9 @@ while running:
     # Заливка фона цветомы
     screen.fill(BLACK)
 
+    # Отображение изображения игрока
+    screen.blit(player_image, player_pos)
+
     # Отображение пуль
     for bullet in bullets:
         screen.blit(bullet_image, (bullet[0], bullet[1]))
@@ -213,13 +208,5 @@ while running:
        print("Игра окончена!")
        running = False
        score = kills
-    # Отображаем текущий кадр
-    current_frame = frames[current_frame_index]
-    current_frame = pygame.image.frombuffer(current_frame.tobytes(), current_frame.shape[1::-1], "RGBA")
-    screen.blit(current_frame, (player_pos))  # Отображаем кадр по координатам (100, 100)
-    
-    # Обновляем индекс текущего кадра
-    current_frame_index = (current_frame_index + 1) % frame_count
-    
     # Обновление экранаwww
     pygame.display.flip()
