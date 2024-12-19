@@ -30,7 +30,6 @@ enemy_image = pygame.transform.scale(enemy_image, (30, 30))  # Изменени�
 player_pos = [750, 450]
 player_health = 100  # Здоровье игрока
    
-
 # Пули
 bullets = []
 bullet_speed = 10
@@ -208,5 +207,6 @@ while running:
        print("Игра окончена!")
        running = False
        score = kills
+       
     # Обновление экранаwww
     pygame.display.flip()
