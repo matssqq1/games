@@ -1,6 +1,14 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QDialog, QLabel
 from PyQt5.QtCore import Qt
+from main import start_game
+
+
+class Mains:
+    def __init__(self):
+        print('main')
+    def start_games(self):
+        start_game()
 
 class SettingsDialog(QDialog):
     def __init__(self, parent=None):
@@ -64,8 +72,9 @@ class SettingsDialog(QDialog):
         self.close()
 
 class MyWindow(QWidget):
-    def __init__(self):
+    def __init__(self,):
         super().__init__()
+        self.main = Mains()
 
         # Создаем кнопки
         self.start_button = QPushButton('Начать')
@@ -81,6 +90,8 @@ class MyWindow(QWidget):
         self.start_button.setFixedSize(250, 40)  # Уменьшен размер кнопок
         self.settings_button.setFixedSize(250, 40)
         self.exit_button.setFixedSize(250, 40)
+
+        self.start_button.clicked.connect(self.start_game)
 
         # Подключаем кнопку "Exit" к функции выхода 
         self.exit_button.clicked.connect(self.close)
@@ -105,6 +116,7 @@ class MyWindow(QWidget):
 
         self.settings_dialog = None  # Храним ссылку на диалог настроек
 
+
     def set_button_style(self, button):
         button.setStyleSheet("""
             QPushButton {
@@ -118,6 +130,11 @@ class MyWindow(QWidget):
                 background-color: #FBC02D; /* Цвет при наведении */
             }
         """)
+
+    def start_game(self):
+        self.close
+        self.main.start_games()
+
 
     def toggle_windows(self):
         if self.settings_dialog is None:
