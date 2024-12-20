@@ -207,6 +207,7 @@ def start_game():
            print("Игра окончена!")
            running = False
            score = kills
-
+           level
+           
         # Обновление экранаwww
         pygame.display.flip()

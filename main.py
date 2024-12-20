@@ -40,10 +40,6 @@ class SettingsDialog(QDialog):
 
         self.setLayout(layout)
 
-        # Устанавливаем прозрачный фон окна
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowFlag(Qt.FramelessWindowHint)  # Без рамки окна
-
         # Подключаем кнопки к функциям
         self.fullscreen_button.clicked.connect(self.enable_fullscreen)
         self.normal_button.clicked.connect(self.keep_normal)
@@ -60,7 +56,7 @@ class SettingsDialog(QDialog):
             QPushButton:hover {
                 background-color: #FBC02D; /* Цвет при наведении */
             }
-        """)
+            """)
 
     def enable_fullscreen(self):
         self.parent().showFullScreen()
@@ -107,10 +103,6 @@ class MyWindow(QWidget):
         layout.addWidget(self.exit_button, alignment=Qt.AlignCenter)
         self.setLayout(layout)
 
-        # Устанавливаем прозрачный фон окна
-        
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowFlag(Qt.FramelessWindowHint)  # Без рамки окна
 
         self.setWindowTitle('My Application')
         self.resize(300, 200)  # Размер окна совпадает с размерами кнопок
