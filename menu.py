@@ -4,6 +4,7 @@ from PyQt5.QtCore import Qt
 from main import start_game
 
 
+
 class Mains:
     def __init__(self):
         print('main')
